@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!-- Cabeçalho inicial -->
+    <!-- Define a cor de fundo e tamanho da box -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.18"
+        android:background="@color/azul_claro"
+        android:gravity="center"
+        android:paddingVertical="20dp">
+
+        <!-- Define o texto e suas caracteristicas -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="34sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center"
+        android:weightSum="4">
+
+        <Button
+            android:id="@+id/btnTodos"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/Filtro_todos"
+            android:backgroundTint="@color/filtro_todos"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btnLeves"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/Filtro_Leves"
+            android:backgroundTint="@color/risco_leve"
+            android:textColor="@color/white"
+            android:layout_marginStart="4dp" />
+
+        <Button
+            android:id="@+id/btnMedios"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/Filtro_Medios"
+            android:backgroundTint="@color/risco_medio"
+            android:textColor="@color/white"
+            android:layout_marginStart="4dp" />
+
+        <Button
+            android:id="@+id/btnGraves"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/Filtro_Graves"
+            android:backgroundTint="@color/risco_grave"
+            android:textColor="@color/white"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnExportarMapa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Botao_exportar_mapa"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/azul_celeste"
+        app:cornerRadius="24dp"
+        android:elevation="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="14dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="12dp" />
+
+    <!-- Container do Mapa -->
+    <FrameLayout
+        android:id="@+id/mapaContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:layout_margin="16dp"
+        android:background="@color/Cinza_claro"
+        android:layout_gravity="center"
+        android:elevation="4dp"
+        android:padding="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botaoVoltar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Botao_voltar"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:backgroundTint="@color/Cinza_claro"
+        app:cornerRadius="24dp"
+        android:elevation="4dp"
+        android:layout_gravity="center_horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="12dp" />
+
+</LinearLayout>

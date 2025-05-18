@@ -9,4 +9,14 @@
     <string name="Primeira_opcao">Cadastrar Funcionário</string>
     <string name="Segunda_opcao">Mapa de Riscos</string>
     <string name="Terceira_opcao">Gerar Relatórios</string>
+    <string name="Filtro_todos">Todos</string>
+    <string name="Filtro_Leves">Leve</string>
+    <string name="Filtro_Medios">Médio</string>
+    <string name="Filtro_Graves">Grave</string>
+    <string name="hint_filtro_data">Selecione uma data</string>
+    <string name="hint_filtro_relatorio">Extrair Relatório</string>
+    <string name="Pre_vizualização">Pré-visyalização do relatório...</string>
+    <string name="Botao_voltar">Voltar</string>
+    <string name="Botao_exportar_mapa">Exportar Mapa</string>
+
 </resources>

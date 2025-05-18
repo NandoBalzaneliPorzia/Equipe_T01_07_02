@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.2"
+        android:layout_weight="0.18"
         android:background="@color/azul_claro"
         android:gravity="center"
         android:paddingVertical="20dp">
@@ -27,75 +27,67 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- Conteúdo Central -->
+    <!-- Filtros -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_horizontal">
+
+        <!-- Filtro de tipo de risco -->
+        <Spinner
+            android:id="@+id/spinnerRisco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/Cinza_claro"
+            android:layout_marginBottom="12dp"
+            android:padding="8dp"/>
+
+        <!-- Filtro de data -->
+        <EditText
+            android:id="@+id/inputData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_filtro_data"
+            android:focusable="false"
+            android:background="@color/Cinza_claro"
+            android:layout_marginBottom="12dp"
+            android:padding="12dp"
+            android:drawableEnd="@drawable/ic_calendar" />
+
+        <!-- Botão de extração -->
+        <Button
+            android:id="@+id/btnExtrairRelatorio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_filtro_relatorio"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/azul_celeste"
+            android:paddingVertical="12dp"
+            android:layout_marginTop="12dp"/>
+    </LinearLayout>
+
+    <!-- Pré-visualização -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.6"
+        android:layout_margin="16dp"
+        android:background="@color/Cinza_claro"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingHorizontal="24dp">
+        android:padding="16dp"
+        android:gravity="top">
 
-        <!-- Frase -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Opções_title"
-            android:textSize="24sp"
+            android:text="@string/Pre_vizualização"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Primeiro Botão -->
-        <Button
-            android:id="@+id/primeiraOpcao"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Primeira_opcao"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:backgroundTint="@color/azul_celeste"
-            android:layout_marginTop="26dp"
-            android:textColor="@color/white"
-            android:elevation="4dp"
-            android:paddingVertical="26dp" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.03" />
-
-        <!-- Segundo Botão -->
-        <Button
-            android:id="@+id/segundaOpcao"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Segunda_opcao"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:backgroundTint="@color/azul_celeste"
-            android:textColor="@color/white"
-            android:elevation="4dp"
-            android:paddingVertical="26dp" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.03" />
-
-        <!-- Terceiro Botão -->
-        <Button
-            android:id="@+id/terceiraOpcao"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Terceira_opcao"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:backgroundTint="@color/azul_celeste"
-            android:textColor="@color/white"
-            android:layout_marginBottom="30dp"
-            android:elevation="4dp"
-            android:paddingVertical="26dp" />
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton

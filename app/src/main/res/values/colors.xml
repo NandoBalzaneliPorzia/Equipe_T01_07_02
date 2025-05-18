@@ -3,5 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="azul_claro">#2196F3</color>
+    <color name="azul_celeste">#64B5F6</color>
     <color name="Cinza">#424242</color>
+    <color name="Cinza_claro">#E0E0E0</color>
+    <color name="Cinza_mais_claro">#F5F5F5</color>
+    <color name="risco_leve">#4CAF50</color>
+    <color name="risco_medio">#FFEB3B</color>
+    <color name="risco_grave">#F44336</color>
+    <color name="filtro_todos">#90A4AE</color>
 </resources>
