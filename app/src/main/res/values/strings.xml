@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">aplicativo_gerente</string>
+    <string name="app_name">WorkSafe</string>
+    <string name="Login_title">Login</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_senha">Senha</string>
+    <string name="botão_login">ENTRAR</string>
+    <string name="botão_esqueceu">Esqueceu a Senha?</string>
+    <string name="Opções_title">Escolha uma das opções abaixo:</string>
+    <string name="Primeira_opcao">Cadastrar Funcionário</string>
+    <string name="Segunda_opcao">Mapa de Riscos</string>
+    <string name="Terceira_opcao">Gerar Relatórios</string>
 </resources>
