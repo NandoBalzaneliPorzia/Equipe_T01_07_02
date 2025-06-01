@@ -58,7 +58,7 @@
 
         <!-- Botão de extração -->
         <Button
-            android:id="@+id/btnExtrairRelatorio"
+            android:id="@+id/btnVisualizarRelatorio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/hint_filtro_relatorio"
@@ -68,6 +68,18 @@
             android:paddingVertical="12dp"
             android:layout_marginTop="12dp"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnExportarRelatorio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/exportar_relatório"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/azul_celeste"
+        android:paddingVertical="12dp"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="8dp"/>
 
     <!-- Pré-visualização -->
     <LinearLayout

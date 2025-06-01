@@ -14,7 +14,7 @@
     <string name="Filtro_Medios">Médio</string>
     <string name="Filtro_Graves">Grave</string>
     <string name="hint_filtro_data">Selecione uma data</string>
-    <string name="hint_filtro_relatorio">Extrair Relatório</string>
+    <string name="hint_filtro_relatorio">Pré-visualizar</string>
     <string name="Pre_vizualização">Pré-visyalização do relatório...</string>
     <string name="Botao_voltar">Voltar</string>
     <string name="Botao_logout">Logout</string>
@@ -25,4 +25,5 @@
         <item>Médio</item>
         <item>Grave</item>
     </string-array>
+    <string name="exportar_relatório">Exportar relatório</string>
 </resources>
