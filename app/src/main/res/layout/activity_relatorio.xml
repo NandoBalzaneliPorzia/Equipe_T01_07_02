@@ -71,7 +71,7 @@
 
     <!-- Pré-visualização -->
     <LinearLayout
-        android:id="@+id/txtPreview"
+        android:id="@+id/containerPreview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.6"
@@ -82,14 +82,16 @@
         android:gravity="top">
 
         <TextView
+            android:id="@+id/txtPreview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Pre_vizualização"
+            android:text="Pré-visualização do relatório"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"/>
     </LinearLayout>
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/botaoVoltar"

@@ -17,6 +17,12 @@
     <string name="hint_filtro_relatorio">Extrair Relatório</string>
     <string name="Pre_vizualização">Pré-visyalização do relatório...</string>
     <string name="Botao_voltar">Voltar</string>
+    <string name="Botao_logout">Logout</string>
     <string name="Botao_exportar_mapa">Exportar Mapa</string>
-
+    <string-array name="tipos_de_riscos">
+        <item>Todos</item>
+        <item>Leve</item>
+        <item>Médio</item>
+        <item>Grave</item>
+    </string-array>
 </resources>

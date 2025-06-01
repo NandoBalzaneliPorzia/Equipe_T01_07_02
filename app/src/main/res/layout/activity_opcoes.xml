@@ -99,10 +99,10 @@
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/botaoVoltar"
+        android:id="@+id/botaoLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Botao_voltar"
+        android:text="@string/Botao_logout"
         android:textStyle="bold"
         android:textColor="@color/black"
         app:backgroundTint="@color/Cinza_claro"
