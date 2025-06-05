@@ -25,5 +25,11 @@
         <item>Médio</item>
         <item>Grave</item>
     </string-array>
+    <string-array name="periodo_filtro_opcoes">
+        <item>Todas as datas</item>
+        <item>Data específica</item>
+        <item>Últimos 7 dias</item>
+        <item>Últimos 30 dias</item>
+    </string-array>
     <string name="exportar_relatório">Exportar relatório</string>
 </resources>

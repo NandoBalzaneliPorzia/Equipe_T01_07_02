@@ -1,43 +1,36 @@
-package com.example.aplicativo_gerente  // Define em qual pacote essa classe está
+package com.example.aplicativo_gerente
 
-import android.os.Bundle  // Necessário para usar o onCreate
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity  // Superclasse para Activities modernas no Android
-import kotlinx.coroutines.FlowPreview
-import java.util.Calendar
 import android.app.DatePickerDialog
-import android.widget.DatePicker
-import com.google.firebase.firestore.FirebaseFirestore
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
+import android.os.Bundle
 import android.os.Environment
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import android.graphics.Paint
-import android.graphics.Typeface
-import android.graphics.Color
+import java.util.*
 
+class RelatorioActivity : AppCompatActivity() {
 
-class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
-
-    private lateinit var spinnerRisco: Spinner      // Componente para selecionar opções        // "private lateinit var" Declara uma variável que será inicializada depois,
-    private lateinit var inputData: EditText        // Campo de entrada para a data de filtro   // dentro do onCreate
-    private lateinit var btnVisualizarRelatorio: Button  // Aciona a exportação do relatório
-    private lateinit var btnVoltar: Button    // Botão de voltar
-    private lateinit var txtPreview: TextView // Exibi a pré-visualização do relatório
+    private lateinit var spinnerRisco: Spinner
+    private lateinit var inputData: EditText
+    private lateinit var btnVisualizarRelatorio: Button
+    private lateinit var btnVoltar: Button
+    private lateinit var txtPreview: TextView
     private lateinit var btnExportarRelatorio: Button
+    private lateinit var spinnerPeriodoFiltro: Spinner
 
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
-    override fun onCreate(savedInstanceState: Bundle?) {  // Método obrigatório que executa assim que a tela abre
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_relatorio)  // Vincula o layout XML
+        setContentView(R.layout.activity_relatorio)
 
         spinnerRisco = findViewById(R.id.spinnerRisco)
         inputData = findViewById(R.id.inputData)
@@ -45,41 +38,58 @@ class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
         btnVoltar = findViewById(R.id.botaoVoltar)
         txtPreview = findViewById(R.id.txtPreview)
         btnExportarRelatorio = findViewById(R.id.btnExportarRelatorio)
+        spinnerPeriodoFiltro = findViewById(R.id.spinnerPeriodoFiltro) // Inicializar
 
-        // Cria o adapter a partir do array de strings
-        val adapter = ArrayAdapter.createFromResource(
+        val adapterRisco = ArrayAdapter.createFromResource(
             this,
             R.array.tipos_de_riscos,
             android.R.layout.simple_spinner_item
         )
+        adapterRisco.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerRisco.adapter = adapterRisco
 
-        // Define o layout para o dropdown
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.periodo_filtro_opcoes,
+            android.R.layout.simple_spinner_item
+        ).also { periodAdapter ->
+            periodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerPeriodoFiltro.adapter = periodAdapter
+        }
 
-        // Associa o adapter ao Spinner
-        spinnerRisco.adapter = adapter
+        spinnerPeriodoFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedPeriod = parent.getItemAtPosition(position).toString()
+                if (selectedPeriod == "Data específica") {
+                    inputData.visibility = View.VISIBLE
+                } else {
+                    inputData.visibility = View.GONE
+                    inputData.setText("") // Limpa data se outra opção for escolhida
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                inputData.visibility = View.GONE
+            }
+        }
 
-        // Configura o DatePicker
         inputData.setOnClickListener {
             mostrarDatePicker()
         }
 
         btnVoltar.setOnClickListener {
-            finish() // Fecha a tela e volta para a anterior
+            finish()
         }
-
 
         btnVisualizarRelatorio.setOnClickListener {
             buscarERenderizarRelatorio()
         }
 
-
         btnExportarRelatorio.setOnClickListener {
-            if (txtPreview.text.isNotEmpty()) {
-                gerarPdfRelatorio(txtPreview.text.toString())
+            val previewText = txtPreview.text.toString()
+            if (previewText.isNotEmpty() && previewText != "Pré-visualização do relatório" && !previewText.startsWith("Nenhum risco encontrado")) {
+                gerarPdfRelatorio(previewText)
             } else {
-                buscarERenderizarRelatorio()
-                gerarPdfRelatorio(txtPreview.text.toString())
+                Toast.makeText(this, "Visualize um relatório antes de exportar.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -91,22 +101,31 @@ class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
 
         val datePicker = DatePickerDialog(this, { _, selectedAno, selectedMes, selectedDia ->
-            val dataFormatada = String.format("%02d/%02d/%04d", selectedDia, selectedMes + 1, selectedAno)
+            val dataFormatada = String.format(Locale.getDefault(), "%02d/%02d/%04d", selectedDia, selectedMes + 1, selectedAno)
             inputData.setText(dataFormatada)
         }, ano, mes, dia)
-
         datePicker.show()
     }
 
-    private fun buscarERenderizarRelatorio() {
-        // Nota: Havia uma dupla declaração de tipoSelecionado e dataSelecionada no código original.
-        // Usei as que estavam fora do loop Firestore.
-        val filtroTipoSelecionadoSpinner = spinnerRisco.selectedItem.toString() // Ex: "Todos", "Leve", "Médio", "Grave"
-        val filtroDataSelecionada = inputData.text.toString().trim()
+    private fun parseDateString(dateStr: String): Date? {
+        return try {
+            dateFormat.parse(dateStr)
+        } catch (e: Exception) {
+            null
+        }
+    }
 
-        if (filtroDataSelecionada.isEmpty()) {
-            Toast.makeText(this, "Selecione uma data", Toast.LENGTH_SHORT).show()
-            return
+    private fun buscarERenderizarRelatorio() {
+        val filtroTipoSelecionadoSpinner = spinnerRisco.selectedItem.toString()
+        val selectedPeriodOption = spinnerPeriodoFiltro.selectedItem.toString()
+        var filtroDataSelecionadaEspecifica = ""
+
+        if (selectedPeriodOption.equals("Data específica")) {
+            filtroDataSelecionadaEspecifica = inputData.text.toString().trim()
+            if (filtroDataSelecionadaEspecifica.isEmpty()) {
+                Toast.makeText(this, "Selecione uma data específica", Toast.LENGTH_SHORT).show()
+                return
+            }
         }
 
         val db = FirebaseFirestore.getInstance()
@@ -114,44 +133,70 @@ class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
             .get()
             .addOnSuccessListener { documentos ->
                 val builder = StringBuilder()
-                var riscoIndexGlobal = 0 // Para numerar os riscos que passam no filtro
+                var riscoIndexGlobal = 0
 
                 for (documento in documentos) {
-                    // Ler da estrutura da "foto 1"
-                    val nivelRiscoOriginalFB = documento.getString("nivelRisco") ?: "" // Ex: "Baixo"
-                    val dataFB = documento.getString("dataRegistro") ?: ""       // Ex: "02/06/2025"
+                    val nivelRiscoOriginalFB = documento.getString("nivelRisco") ?: ""
+                    val dataFBString = documento.getString("dataRegistro") ?: ""
                     val descricaoFB = documento.getString("descricao") ?: ""
                     val tituloFB = documento.getString("titulo") ?: ""
-                    // O campo "localizacao" não existe na "foto 1".
-                    // Se precisar dele, adicione ao Firebase e leia aqui.
-                    // val localFB = documento.getString("localizacao") ?: ""
 
-                    // Mapear o valor de nivelRiscoOriginalFB para ser comparável com o filtroTipoSelecionadoSpinner
-                    // Ex: Firebase "Baixo" -> App (Spinner) "Leve"
                     val nivelRiscoMapeadoParaComparacao = when (nivelRiscoOriginalFB.lowercase(Locale.getDefault())) {
-                        "baixo" -> "Leve"   // Ajuste "Leve" para o valor exato no seu spinner array
-                        "medio" -> "Médio"  // Ajuste "Médio" para o valor exato no seu spinner array
-                        "médio" -> "Médio"
-                        "grave" -> "Grave"  // Ajuste "Grave" para o valor exato no seu spinner array
-                        "alto"  -> "Grave"
-                        else -> nivelRiscoOriginalFB // Fallback, pode não corresponder se o spinner for diferente
+                        "baixo" -> "Leve"   // Ex: se o spinner tem "Leve"
+                        "medio" -> "Médio"  // Ex: se o spinner tem "Médio"
+                        "médio" -> "Médio" // Para cobrir variações com/sem acento
+                        "grave" -> "Grave"  // Ex: se o spinner tem "Grave"
+                        "alto"  -> "Grave"  // Se "Alto" no DB significa "Grave"
+                        else -> nivelRiscoOriginalFB
                     }
 
-                    val condicaoNivel = filtroTipoSelecionadoSpinner.equals("Todos", ignoreCase = true) ||
-                            nivelRiscoMapeadoParaComparacao.equals(filtroTipoSelecionadoSpinner, ignoreCase = true)
+                    val condicaoNivel: Boolean
+                    if (filtroTipoSelecionadoSpinner.equals("Todos", ignoreCase = true)) {
+                        condicaoNivel = true
+                    } else {
+                        condicaoNivel = nivelRiscoMapeadoParaComparacao.equals(filtroTipoSelecionadoSpinner, ignoreCase = true)
+                    }
 
-                    // Certifique-se que o formato da data no Firebase (dataFB)
-                    // é o mesmo que o selecionado no input (filtroDataSelecionada)
-                    val condicaoData = dataFB == filtroDataSelecionada
+                    val condicaoData: Boolean
+                    val dataDocumentoDate = parseDateString(dataFBString)
+
+                    when {
+                        selectedPeriodOption.equals("Todas as datas") -> {
+                            condicaoData = true
+                        }
+                        selectedPeriodOption.equals("Data específica") -> {
+                            condicaoData = dataFBString == filtroDataSelecionadaEspecifica
+                        }
+                        selectedPeriodOption.equals("Últimos 7 dias") -> {
+                            condicaoData = if (dataDocumentoDate != null) {
+                                val startDate = Calendar.getInstance().apply {
+                                    add(Calendar.DAY_OF_YEAR, -6)
+                                    set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+                                }.time
+                                !dataDocumentoDate.before(startDate)
+                            } else false
+                        }
+                        selectedPeriodOption.equals("Últimos 30 dias") -> {
+                            condicaoData = if (dataDocumentoDate != null) {
+                                val startDate = Calendar.getInstance().apply {
+                                    add(Calendar.DAY_OF_YEAR, -29)
+                                    set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+                                }.time
+                                !dataDocumentoDate.before(startDate)
+                            } else false
+                        }
+                        else -> {
+                            condicaoData = true
+                        }
+                    }
 
                     if (condicaoNivel && condicaoData) {
                         riscoIndexGlobal++
                         builder.appendLine("──────────────────────────────")
                         builder.appendLine("Risco $riscoIndexGlobal")
                         builder.appendLine("Título: $tituloFB")
-                        builder.appendLine("Nível: $nivelRiscoOriginalFB") // Exibe o valor original do Firebase
-                        // builder.appendLine("Local: $localFB") // Removido pois "localizacao" não está na foto 1
-                        builder.appendLine("Data: $dataFB")
+                        builder.appendLine("Nível: $nivelRiscoOriginalFB")
+                        builder.appendLine("Data: $dataFBString")
                         builder.appendLine("Descrição:")
                         builder.appendLine("$descricaoFB")
                         builder.appendLine("──────────────────────────────\n")
@@ -172,75 +217,98 @@ class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
     private fun exportarRelatorioParaTxt() {
         val textoRelatorio = txtPreview.text.toString()
 
-        if (textoRelatorio.isBlank()) {
-            Toast.makeText(this, "Gere um relatório antes de exportar.", Toast.LENGTH_SHORT).show()
+        if (textoRelatorio.isBlank() || textoRelatorio == "Pré-visualização do relatório" || textoRelatorio.startsWith("Nenhum risco encontrado")) {
+            Toast.makeText(this, "Gere um relatório válido antes de exportar.", Toast.LENGTH_SHORT).show()
             return
         }
 
         val nomeArquivo = "relatorio_${System.currentTimeMillis()}.txt"
         val diretorio = getExternalFilesDir(null)
-        val arquivo = java.io.File(diretorio, nomeArquivo)
+        if (diretorio == null) {
+            Toast.makeText(this, "Não foi possível acessar o armazenamento.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (!diretorio.exists()) {
+            diretorio.mkdirs()
+        }
+        val arquivo = File(diretorio, nomeArquivo)
 
         try {
             arquivo.writeText(textoRelatorio)
             Toast.makeText(this, "Relatório exportado em:\n${arquivo.absolutePath}", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Erro ao salvar o arquivo.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Erro ao salvar o arquivo TXT.", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun gerarPdfRelatorio(conteudo: String) {
+        if (conteudo.isBlank() || conteudo == "Pré-visualização do relatório" || conteudo.startsWith("Nenhum risco encontrado")) {
+            Toast.makeText(this, "Gere um relatório válido antes de exportar para PDF.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val document = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4
-        val page = document.startPage(pageInfo)
-        val canvas = page.canvas
+        var page = document.startPage(pageInfo)
+        var canvas = page.canvas //
 
         val paintTitulo = Paint().apply {
-            textSize = 16f
-            typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
-            color = Color.BLUE
+            textSize = 18f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            color = Color.rgb(0, 0, 139)
             textAlign = Paint.Align.CENTER
         }
-
         val paintCorpo = Paint().apply {
-            textSize = 12f
+            textSize = 10f
             color = Color.BLACK
+            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
         }
 
-        // Título centralizado
-        canvas.drawText("Relatório de Riscos - WorkSafe", 595 / 2f, 50f, paintTitulo)
+        val xTitulo = pageInfo.pageWidth / 2f
+        val topMarginPrimeiraPagina = 70f
+        val marginGeral = 40f
+        val lineHeight = 15f
 
-        // Conteúdo do relatório
+        canvas.drawText("Relatório de Riscos - WorkSafe", xTitulo, marginGeral, paintTitulo)
+        var yPos = topMarginPrimeiraPagina
+
         val linhas = conteudo.split("\n")
-        var y = 80f
 
         for (linha in linhas) {
-            if (y > 800) break
-            canvas.drawText(linha, 40f, y, paintCorpo)
-            y += 20f
+
+            if (yPos > pageInfo.pageHeight - marginGeral) {
+                document.finishPage(page)
+                page = document.startPage(pageInfo)
+                canvas = page.canvas
+                yPos = marginGeral
+            }
+            canvas.drawText(linha, marginGeral, yPos, paintCorpo)
+            yPos += lineHeight
         }
 
         document.finishPage(page)
 
         try {
-            val pasta = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path)
-            if (!pasta.exists()) pasta.mkdirs()
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val appFolder = File(downloadsDir, "WorkSafeReports")
+            if (!appFolder.exists()) {
+                appFolder.mkdirs()
+            }
 
-            val timestamp = SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(Date())
-            val arquivoPdf = File(pasta, "relatorio_riscos_$timestamp.pdf")
+            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val arquivoPdf = File(appFolder, "Relatorio_Riscos_WorkSafe_$timestamp.pdf")
 
-            val outputStream = FileOutputStream(arquivoPdf)
-            document.writeTo(outputStream)
-            document.close()
-            outputStream.close()
+            FileOutputStream(arquivoPdf).use { outputStream ->
+                document.writeTo(outputStream)
+            }
+            Toast.makeText(this, "PDF salvo em: ${arquivoPdf.absolutePath}", Toast.LENGTH_LONG).show()
 
-            Toast.makeText(this, "PDF gerado em:\n${arquivoPdf.absolutePath}", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Erro ao gerar PDF", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Erro ao gerar PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+        } finally {
+            document.close()
         }
     }
-
-
 }

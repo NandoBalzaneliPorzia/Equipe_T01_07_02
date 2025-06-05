@@ -1,18 +1,17 @@
 package com.example.aplicativo_gerente
 
-import android.content.Intent  // Permite navegar entre as telas
-import android.os.Bundle       // Carrega os dados ao criar a Activity
-import android.widget.Button   // Para usar os botões da interface
-import androidx.appcompat.app.AppCompatActivity  // Classe base para activities modernas no Android
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton // Importar MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 
 class OpcoesActivity : AppCompatActivity() {
 
-    // Declara 4 váriáveis para botões de interface
-    private lateinit var btnCadastrarFuncionario: Button
-    private lateinit var btnMapaRisco: Button
-    private lateinit var btnGerarRelatorios: Button
-    private lateinit var btnLogout: Button
+    private lateinit var btnMapaRisco: MaterialButton
+    private lateinit var btnGerarRelatorios: MaterialButton
+    private lateinit var btnLogout: MaterialButton
 
     private lateinit var auth: FirebaseAuth
 
@@ -20,19 +19,11 @@ class OpcoesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_opcoes)
 
-        // Inicializa Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        // Referência aos botões
-        btnCadastrarFuncionario = findViewById(R.id.primeiraOpcao)
-        btnMapaRisco = findViewById(R.id.segundaOpcao)
-        btnGerarRelatorios = findViewById(R.id.terceiraOpcao)
+        btnMapaRisco = findViewById(R.id.btnMapaRisco_xml)
+        btnGerarRelatorios = findViewById(R.id.btnGerarRelatorios_xml)
         btnLogout = findViewById(R.id.botaoLogout)
-
-        btnCadastrarFuncionario.setOnClickListener {
-            // TODO: criar a tela ou funcionalidade de cadastro se quiser
-            // startActivity(Intent(this, CadastroActivity::class.java))
-        }
 
         btnMapaRisco.setOnClickListener {
             startActivity(Intent(this, MapaActivity::class.java))
@@ -43,11 +34,11 @@ class OpcoesActivity : AppCompatActivity() {
         }
 
         btnLogout.setOnClickListener {
-            val intent = Intent(this,LoginActivity::class.java)
+            auth.signOut()
+            val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
     }
 }
-

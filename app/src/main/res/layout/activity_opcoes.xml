@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/login"
+    android:id="@+id/opcoes_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white">
 
-    <!-- Cabeçalho inicial -->
-    <!-- Define a cor de fundo e tamanho da box -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -17,7 +15,6 @@
         android:gravity="center"
         android:paddingVertical="20dp">
 
-        <!-- Define o texto e suas caracteristicas -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,75 +24,51 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- Conteúdo Central -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.8"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingHorizontal="24dp">
+        android:gravity="center_vertical"
+        android:paddingHorizontal="32dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp">
 
-        <!-- Frase -->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Opções_title"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Primeiro Botão -->
-        <Button
-            android:id="@+id/primeiraOpcao"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Primeira_opcao"
-            android:textStyle="bold"
             android:textSize="20sp"
-            android:backgroundTint="@color/azul_celeste"
-            android:layout_marginTop="26dp"
-            android:textColor="@color/white"
-            android:elevation="4dp"
-            android:paddingVertical="26dp" />
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:layout_marginBottom="32dp" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.03" />
-
-        <!-- Segundo Botão -->
-        <Button
-            android:id="@+id/segundaOpcao"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMapaRisco_xml"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Segunda_opcao"
             android:textStyle="bold"
-            android:textSize="20sp"
-            android:backgroundTint="@color/azul_celeste"
+            android:textSize="18sp"
+            app:backgroundTint="@color/azul_celeste"
             android:textColor="@color/white"
-            android:elevation="4dp"
-            android:paddingVertical="26dp" />
+            app:cornerRadius="28dp"
+            android:paddingVertical="18dp"
+            android:layout_marginBottom="20dp"/>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.03" />
-
-        <!-- Terceiro Botão -->
-        <Button
-            android:id="@+id/terceiraOpcao"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGerarRelatorios_xml"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Terceira_opcao"
             android:textStyle="bold"
-            android:textSize="20sp"
-            android:backgroundTint="@color/azul_celeste"
+            android:textSize="18sp"
+            app:backgroundTint="@color/azul_celeste"
             android:textColor="@color/white"
-            android:layout_marginBottom="30dp"
-            android:elevation="4dp"
-            android:paddingVertical="26dp" />
+            app:cornerRadius="28dp"
+            android:paddingVertical="18dp"/>
+
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -103,12 +76,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/Botao_logout"
-        android:textStyle="bold"
+        android:textStyle="normal"
+        android:textSize="14sp"
         android:textColor="@color/black"
         app:backgroundTint="@color/Cinza_claro"
-        app:cornerRadius="24dp"
+        app:cornerRadius="20dp"
         android:elevation="4dp"
         android:layout_gravity="center_horizontal"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="12dp" />
+        android:paddingHorizontal="32dp"
+        android:paddingVertical="12dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="16dp"/>
+
 </LinearLayout>
