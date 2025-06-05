@@ -99,11 +99,13 @@ class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
     }
 
     private fun buscarERenderizarRelatorio() {
-        val tipoSelecionado = spinnerRisco.selectedItem.toString().lowercase()
-        val dataSelecionada = inputData.text.toString().trim()
+        // Nota: Havia uma dupla declaração de tipoSelecionado e dataSelecionada no código original.
+        // Usei as que estavam fora do loop Firestore.
+        val filtroTipoSelecionadoSpinner = spinnerRisco.selectedItem.toString() // Ex: "Todos", "Leve", "Médio", "Grave"
+        val filtroDataSelecionada = inputData.text.toString().trim()
 
-        if (dataSelecionada.isEmpty()) {
-            Toast.makeText(this, "Selecione uma data", Toast. LENGTH_SHORT).show()
+        if (filtroDataSelecionada.isEmpty()) {
+            Toast.makeText(this, "Selecione uma data", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -112,32 +114,46 @@ class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
             .get()
             .addOnSuccessListener { documentos ->
                 val builder = StringBuilder()
+                var riscoIndexGlobal = 0 // Para numerar os riscos que passam no filtro
 
-                for ((index, document) in documentos.withIndex()) {
-                    val nivel = document.getString("nivel") ?: ""
-                    val data = document.getString("data") ?: ""
-                    val local = document.getString("localizacao") ?: ""
-                    val descricao = document.getString("descricao") ?: ""
-                    val titulo = document.getString("titulo") ?: ""
+                for (documento in documentos) {
+                    // Ler da estrutura da "foto 1"
+                    val nivelRiscoOriginalFB = documento.getString("nivelRisco") ?: "" // Ex: "Baixo"
+                    val dataFB = documento.getString("dataRegistro") ?: ""       // Ex: "02/06/2025"
+                    val descricaoFB = documento.getString("descricao") ?: ""
+                    val tituloFB = documento.getString("titulo") ?: ""
+                    // O campo "localizacao" não existe na "foto 1".
+                    // Se precisar dele, adicione ao Firebase e leia aqui.
+                    // val localFB = documento.getString("localizacao") ?: ""
 
-                    // Aplica filtro
-                    val tipoSelecionado = spinnerRisco.selectedItem.toString()
-                    val dataSelecionada = inputData.text.toString()
+                    // Mapear o valor de nivelRiscoOriginalFB para ser comparável com o filtroTipoSelecionadoSpinner
+                    // Ex: Firebase "Baixo" -> App (Spinner) "Leve"
+                    val nivelRiscoMapeadoParaComparacao = when (nivelRiscoOriginalFB.lowercase(Locale.getDefault())) {
+                        "baixo" -> "Leve"   // Ajuste "Leve" para o valor exato no seu spinner array
+                        "medio" -> "Médio"  // Ajuste "Médio" para o valor exato no seu spinner array
+                        "médio" -> "Médio"
+                        "grave" -> "Grave"  // Ajuste "Grave" para o valor exato no seu spinner array
+                        "alto"  -> "Grave"
+                        else -> nivelRiscoOriginalFB // Fallback, pode não corresponder se o spinner for diferente
+                    }
 
-                    val condicaoNivel = tipoSelecionado == "Todos" || nivel.equals(tipoSelecionado, ignoreCase = true)
-                    val condicaoData = data == dataSelecionada
+                    val condicaoNivel = filtroTipoSelecionadoSpinner.equals("Todos", ignoreCase = true) ||
+                            nivelRiscoMapeadoParaComparacao.equals(filtroTipoSelecionadoSpinner, ignoreCase = true)
+
+                    // Certifique-se que o formato da data no Firebase (dataFB)
+                    // é o mesmo que o selecionado no input (filtroDataSelecionada)
+                    val condicaoData = dataFB == filtroDataSelecionada
 
                     if (condicaoNivel && condicaoData) {
-                        val riscoIndex = index + 1
-
+                        riscoIndexGlobal++
                         builder.appendLine("──────────────────────────────")
-                        builder.appendLine("Risco $riscoIndex")
-                        builder.appendLine("Título: $titulo")
-                        builder.appendLine("Nível: $nivel")
-                        builder.appendLine("Local: $local")
-                        builder.appendLine("Data: $data")
+                        builder.appendLine("Risco $riscoIndexGlobal")
+                        builder.appendLine("Título: $tituloFB")
+                        builder.appendLine("Nível: $nivelRiscoOriginalFB") // Exibe o valor original do Firebase
+                        // builder.appendLine("Local: $localFB") // Removido pois "localizacao" não está na foto 1
+                        builder.appendLine("Data: $dataFB")
                         builder.appendLine("Descrição:")
-                        builder.appendLine("$descricao")
+                        builder.appendLine("$descricaoFB")
                         builder.appendLine("──────────────────────────────\n")
                     }
                 }
@@ -149,7 +165,7 @@ class RelatorioActivity : AppCompatActivity() {  // Nome da Activity
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Erro ao carregar os dados.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Erro ao carregar os dados: ${it.message}", Toast.LENGTH_LONG).show()
             }
     }
 

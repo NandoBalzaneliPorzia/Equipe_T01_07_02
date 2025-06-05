@@ -82,44 +82,54 @@ class MapaActivity : AppCompatActivity() {
         }
     }
 
-    private fun carregarRiscos(filtro: String){
-        // Limpa qualquer bolinha anterior no mapa
+    private fun carregarRiscos(filtro: String) {
         mapaContainer.removeViews(1, mapaContainer.childCount - 1)
 
-        // Faz a busca na coleção "riscos" no bd
         db.collection("riscos")
             .get()
             .addOnSuccessListener { documentos ->
                 for (documento in documentos) {
-                    val tipo = documento.getString("nivel") ?: ""  // nível = grave, leve, médio
+                    // Ler da estrutura da "foto 1"
+                    val nivelRiscoFirebase = documento.getString("nivelRisco") ?: ""
+                    val lat = documento.getDouble("latitude")
+                    val lon = documento.getDouble("longitude")
 
-                    val coordenadas = documento.get("coordenadas") as? Map<*, *>
-                    val lat = coordenadas?.get("latitude") as? Double
-                    val lon = coordenadas?.get("longitude") as? Double
+                    // Mapear o valor de nivelRiscoFirebase para o tipo esperado pelo filtro/bolinha
+                    // Ex: Firebase "Baixo" -> App "leve"
+                    // Firebase "Medio" -> App "medio"
+                    // Firebase "Grave" -> App "grave"
+                    val tipoNormalizado = when (nivelRiscoFirebase.lowercase(Locale.getDefault())) {
+                        "baixo" -> "leve"
+                        "medio" -> "medio" // Se no Firebase for "Medio" (com M maiúsculo)
+                        "médio" -> "medio" // Se no Firebase for "Médio" (com acento)
+                        "grave" -> "grave"
+                        "alto"  -> "grave" // Caso use "Alto" para "Grave"
+                        else -> nivelRiscoFirebase.lowercase(Locale.getDefault()) // Fallback
+                    }
 
                     if (lat != null && lon != null) {
                         val (x, y) = normalizarCoordenadas(lat, lon)
 
-                        val dadosValidos = tipo in listOf("leve", "medio", "grave") &&
+                        // Valida se o tipo normalizado é um dos esperados e se as coordenadas estão no mapa
+                        val dadosValidos = tipoNormalizado in listOf("leve", "medio", "grave") &&
                                 x in 0.0..1.0 && y in 0.0..1.0
 
-                        if (dadosValidos && (filtro == "todos" || filtro.equals(tipo, ignoreCase = true))) {
-                            adicionarBolinha(x, y, tipo)
-
+                        if (dadosValidos && (filtro == "todos" || filtro.equals(tipoNormalizado, ignoreCase = true))) {
+                            adicionarBolinha(x, y, tipoNormalizado)
                         }
                     }
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Erro ao carregar os riscos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Erro ao carregar os riscos: ${it.message}", Toast.LENGTH_LONG).show()
             }
     }
 
     fun normalizarCoordenadas(latitude: Double, longitude: Double): Pair<Double, Double> {
-        val latMin = -22.8382 // ficou mais baixo
-        val latMax = -22.8351 // ficou mais alto
-        val lonMin = -47.0783 // mais à esquerda
-        val lonMax = -47.0759 // mais à direita
+        val latMin = -22.8390
+        val latMax = -22.8347
+        val lonMin = -47.0790
+        val lonMax = -47.0748
 
         val y = 1.0 - ((latitude - latMin) / (latMax - latMin))
         val x = (longitude - lonMin) / (lonMax - lonMin)
